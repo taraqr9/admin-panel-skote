@@ -51,3 +51,14 @@ php artisan migrate --seed
 ## Use the seeded admin account: <br><br>
 User: admin <br>
 password: password
+
+## Theme Information
+
+This project uses the SKOTE Theme.
+
+Theme source:
+
+Drive Link:
+https://drive.google.com/drive/u/0/folders/1GEVzoWiaGnm2sFAj0QHhGOCtZijM-Iv8
+
+Use this file from the drive: SKOTE-themesbrand.com.zip
