@@ -1,0 +1,15 @@
+#!/bin/sh
+
+echo "Running Laravel Pint..."
+
+./vendor/bin/pint
+
+if [ $? -ne 0 ]; then
+    echo "Pint failed. Commit cancelled."
+    exit 1
+fi
+
+# Re-add formatted files automatically
+git add .
+
+echo "Pint completed successfully."
