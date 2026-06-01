@@ -10,6 +10,8 @@ class ActivityLogController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()->can('activity_log-view'), 403);
+
         $page_title = 'Activity Logs';
 
         $query = Activity::query()

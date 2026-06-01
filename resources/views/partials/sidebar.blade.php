@@ -8,7 +8,11 @@
                 @forelse($menus as $menu)
 
                     @php
-                        $hasChildren = $menu->children?->isNotEmpty();
+                        $visibleChildren = $menu->children->filter(function ($child) {
+                            return !$child->permission || auth()->user()->can($child->permission);
+                        });
+
+                        $hasVisibleChildren = $visibleChildren->isNotEmpty();
 
                         $menuUrl = '#';
 
@@ -18,36 +22,61 @@
                             $menuUrl = url($menu->url);
                         }
 
-                        $isChildActive = $hasChildren && $menu->children->contains(function ($child) {
-                            return $child->route && Route::has($child->route) && request()->routeIs($child->route);
+                        $isChildActive = $hasVisibleChildren && $visibleChildren->contains(function ($child) {
+                            if (!$child->route || !Route::has($child->route)) {
+                                return false;
+                            }
+
+                            if (request()->routeIs($child->route)) {
+                                return true;
+                            }
+
+                            if (str($child->route)->endsWith('.index')) {
+                                $childRouteBase = str($child->route)->beforeLast('.')->toString();
+
+                                return request()->routeIs($childRouteBase . '.*');
+                            }
+
+                            return false;
                         });
 
-                        $isActive = (
-                            $menu->route &&
-                            Route::has($menu->route) &&
-                            request()->routeIs($menu->route)
-                        ) || $isChildActive;
+                        $isParentRouteActive = false;
+
+                        if ($menu->route && Route::has($menu->route)) {
+                            $isParentRouteActive = request()->routeIs($menu->route);
+
+                            if (str($menu->route)->endsWith('.index')) {
+                                $menuRouteBase = str($menu->route)->beforeLast('.')->toString();
+
+                                $isParentRouteActive = $isParentRouteActive || request()->routeIs($menuRouteBase . '.*');
+                            }
+                        }
+
+                        $isActive = $isParentRouteActive || $isChildActive;
+
+                        $canViewParent = !$menu->permission || auth()->user()->can($menu->permission);
                     @endphp
 
-                    @if(!$menu->permission || auth()->user()->can($menu->permission))
+                    @if($canViewParent)
 
-                        @if($hasChildren)
+                        @if($menu->children->isNotEmpty())
 
-                            <li class="{{ $isActive ? 'mm-active' : '' }}">
-                                <a href="javascript:void(0);" class="has-arrow waves-effect">
+                            @if($hasVisibleChildren)
+                                <li class="{{ $isActive ? 'mm-active' : '' }}">
+                                    <a href="javascript:void(0);"
+                                       class="has-arrow waves-effect {{ $isActive ? 'mm-active' : '' }}">
 
-                                    @if($menu->icon)
-                                        <i class="{{ $menu->icon }}"></i>
-                                    @endif
+                                        @if($menu->icon)
+                                            <i class="{{ $menu->icon }}"></i>
+                                        @endif
 
-                                    <span>{{ $menu->title }}</span>
-                                </a>
+                                        <span>{{ $menu->title }}</span>
+                                    </a>
 
-                                <ul class="sub-menu" aria-expanded="{{ $isActive ? 'true' : 'false' }}">
+                                    <ul class="sub-menu {{ $isActive ? 'mm-show' : '' }}"
+                                        aria-expanded="{{ $isActive ? 'true' : 'false' }}">
 
-                                    @foreach($menu->children as $child)
-
-                                        @if(!$child->permission || auth()->user()->can($child->permission))
+                                        @foreach($visibleChildren as $child)
 
                                             @php
                                                 $childUrl = '#';
@@ -58,13 +87,22 @@
                                                     $childUrl = url($child->url);
                                                 }
 
-                                                $childActive = $child->route &&
-                                                    Route::has($child->route) &&
-                                                    request()->routeIs($child->route);
+                                                $childActive = false;
+
+                                                if ($child->route && Route::has($child->route)) {
+                                                    $childActive = request()->routeIs($child->route);
+
+                                                    if (str($child->route)->endsWith('.index')) {
+                                                        $childRouteBase = str($child->route)->beforeLast('.')->toString();
+
+                                                        $childActive = $childActive || request()->routeIs($childRouteBase . '.*');
+                                                    }
+                                                }
                                             @endphp
 
                                             <li class="{{ $childActive ? 'mm-active' : '' }}">
-                                                <a href="{{ $childUrl }}">
+                                                <a href="{{ $childUrl }}"
+                                                   class="{{ $childActive ? 'active' : '' }}">
 
                                                     @if($child->icon)
                                                         <i class="{{ $child->icon }}"></i>
@@ -74,18 +112,18 @@
                                                 </a>
                                             </li>
 
-                                        @endif
+                                        @endforeach
 
-                                    @endforeach
-
-                                </ul>
-                            </li>
+                                    </ul>
+                                </li>
+                            @endif
 
                         @else
 
                             @if($menu->route || $menu->url)
                                 <li class="{{ $isActive ? 'mm-active' : '' }}">
-                                    <a href="{{ $menuUrl }}" class="waves-effect">
+                                    <a href="{{ $menuUrl }}"
+                                       class="waves-effect {{ $isActive ? 'active' : '' }}">
 
                                         @if($menu->icon)
                                             <i class="{{ $menu->icon }}"></i>

@@ -55,11 +55,12 @@ class Menu extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->useLogName('menu')
+            ->useLogName(strtolower(class_basename($this)))
             ->logAll()
             ->logOnlyDirty()
             ->setDescriptionForEvent(function (string $eventName) {
-                return "User {$eventName}";
+                return class_basename($this)." {$eventName}<br>".
+                    '<strong>Table:</strong> '.$this->getTable();
             });
     }
 }

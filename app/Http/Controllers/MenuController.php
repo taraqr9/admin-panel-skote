@@ -21,12 +21,16 @@ class MenuController extends Controller
             ->orderBy('title')
             ->get();
 
-        $query = Menu::query();
+        $query = Menu::query()
+            ->leftJoin('menus as parent_menus', 'menus.parent_id', '=', 'parent_menus.id')
+            ->select('menus.*');
 
         $menu_list = MenuIndexFilter::applyFilters($query, $request)
             ->with('parent')
-            ->orderBy('parent_id')
-            ->orderBy('serial')
+            ->orderByRaw('COALESCE(parent_menus.serial, menus.serial)')
+            ->orderByRaw('COALESCE(parent_menus.id, menus.id)')
+            ->orderByRaw('menus.parent_id IS NOT NULL')
+            ->orderBy('menus.serial')
             ->paginate(20)
             ->appends($request->query());
 

@@ -131,5 +131,39 @@ class MenuSeeder extends Seeder
                 'is_active' => 1,
             ]
         );
+
+        /*
+        |--------------------------------------------------------------------------
+        | SETTINGS (PARENT)
+        |--------------------------------------------------------------------------
+        */
+
+        $settings = Menu::firstOrCreate(
+            [
+                'title' => 'Settings',
+                'parent_id' => null,
+            ],
+            [
+                'icon' => 'bx bx-cog',
+                'permission' => null,
+                'serial' => 5,
+                'route' => null,
+                'is_active' => 1,
+            ]
+        );
+
+        Menu::firstOrCreate(
+            [
+                'route' => 'organizations.index',
+            ],
+            [
+                'title' => 'Organization',
+                'icon' => 'bx bx-building-house me-1',
+                'parent_id' => $settings->id,
+                'permission' => 'organization-view',
+                'serial' => 1,
+                'is_active' => 1,
+            ]
+        );
     }
 }

@@ -77,8 +77,7 @@
                         <div class="card-body">
 
                             <div class="table-responsive">
-                                <table
-                                    class="table align-middle table-nowrap table-hover dt-responsive nowrap w-100 mb-0">
+                                <table class="table align-middle table-hover w-100 mb-0">
                                     <thead class="table-light">
                                     <tr>
                                         <th scope="col" style="width: 60px;">#</th>
@@ -101,14 +100,16 @@
                                                 </h5>
                                             </td>
 
-                                            <td>
-                                                @forelse($role->permissions as $permission)
-                                                    <span class="badge bg-info mb-1">
-                                                        {{ $permission->name }}
-                                                    </span>
-                                                @empty
-                                                    <span class="text-muted">No permission assigned</span>
-                                                @endforelse
+                                            <td style="white-space: normal;">
+                                                <div class="d-flex flex-wrap gap-1">
+                                                    @forelse($role->permissions as $permission)
+                                                        <span class="badge bg-info">
+                                                            {{ $permission->name }}
+                                                        </span>
+                                                    @empty
+                                                        <span class="text-muted">No permission assigned</span>
+                                                    @endforelse
+                                                </div>
                                             </td>
 
                                             <td class="text-center">

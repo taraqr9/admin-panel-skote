@@ -51,7 +51,7 @@ class User extends Authenticatable
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->useLogName('user')
+            ->useLogName(strtolower(class_basename($this)))
             ->logAll()
             ->logExcept([
                 'password',
@@ -59,7 +59,8 @@ class User extends Authenticatable
             ])
             ->logOnlyDirty()
             ->setDescriptionForEvent(function (string $eventName) {
-                return "User {$eventName}";
+                return class_basename($this)." {$eventName}<br>".
+                    '<strong>Table:</strong> '.$this->getTable();
             });
     }
 }

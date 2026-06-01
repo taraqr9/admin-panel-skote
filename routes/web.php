@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ErrorLogController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,10 @@ Route::middleware(['auth', 'block.impersonation.actions'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])
         ->name('dashboard');
+
+    Route::group(['prefix' => 'settings'], function () {
+        Route::resource('organizations', OrganizationController::class);
+    });
 });
 
 Route::fallback(function () {

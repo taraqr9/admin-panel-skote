@@ -10,7 +10,7 @@
                         'label' => 'Logs',
                     ],
                     [
-                        'label' => 'Error Logs',
+                        'label' => 'Error',
                     ],
                 ],
             ])

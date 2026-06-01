@@ -10,7 +10,7 @@
                         'label' => 'Logs',
                     ],
                     [
-                        'label' => 'Activity Logs',
+                        'label' => 'Activity',
                     ],
                 ],
             ])
@@ -122,7 +122,7 @@
                                         <th scope="col">Event</th>
                                         <th scope="col">Description</th>
                                         <th scope="col">Causer</th>
-                                        <th scope="col">Subject</th>
+                                        <th scope="col">Model & ID</th>
                                         <th scope="col">IP</th>
                                         <th scope="col">Date Time</th>
                                         <th scope="col" class="text-center" style="width: 100px;">Details</th>
@@ -162,7 +162,7 @@
                                                 @endif
                                             </td>
 
-                                            <td>{{ $log->description }}</td>
+                                            <td>{!! $log->description !!}</td>
 
                                             <td>
                                                 @if($log->causer)
@@ -184,11 +184,10 @@
                                             </td>
 
                                             <td>
-                                                @if($log->subject_type)
-                                                    <small>
-                                                        {{ class_basename($log->subject_type) }}
-                                                        #{{ $log->subject_id }}
-                                                    </small>
+                                                @if($log->subject_type && $log->subject_id)
+                                                    <span class="badge bg-secondary">
+                                                        {{ class_basename($log->subject_type) }} ( ID: {{ $log->subject_id }} )
+                                                    </span>
                                                 @else
                                                     <span class="text-muted">N/A</span>
                                                 @endif
@@ -251,9 +250,9 @@
                                                         <div class="mb-3">
                                                             <strong>Username:</strong>
                                                             <div>
-                                <span class="badge bg-primary">
-                                    {{ $log->causer->username ?? 'N/A' }}
-                                </span>
+                                                                <span class="badge bg-primary">
+                                                                    {{ $log->causer->username ?? 'N/A' }}
+                                                                </span>
                                                             </div>
                                                         </div>
 
@@ -267,8 +266,8 @@
                                                             <div>
                                                                 @forelse($log->causer->roles ?? [] as $role)
                                                                     <span class="badge bg-info mb-1">
-                                        {{ $role->name }}
-                                    </span>
+                                                                    {{ $role->name }}
+                                                                </span>
                                                                 @empty
                                                                     <span class="text-muted">No role assigned</span>
                                                                 @endforelse
@@ -382,6 +381,19 @@
                                                         <div>
                                                             {{ $log->created_at ? $log->created_at->timezone('Asia/Dhaka')->format('d M Y h:i A') : '' }}
                                                         </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <strong>Model Name:</strong>
+                                                        <div>{{ $log->subject_type }}</div>
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <strong>ID:</strong>
+
+                                                        <div>{{ $log->subject_id }}</div>
                                                     </div>
                                                 </div>
 

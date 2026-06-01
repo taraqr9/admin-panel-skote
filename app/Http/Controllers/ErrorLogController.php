@@ -13,6 +13,8 @@ class ErrorLogController extends Controller
 {
     public function index(Request $request): View
     {
+        abort_unless(auth()->user()->can('error_log-view'), 403);
+
         $page_title = 'Error Logs';
 
         $logPath = storage_path('logs/errors');

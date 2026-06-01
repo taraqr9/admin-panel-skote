@@ -107,7 +107,7 @@
                                     @forelse($menu_list as $menu)
                                         <tr>
                                             <td>
-                                                {{ $loop->iteration }}
+                                                {{ $loop->iteration + ($menu_list->currentPage() - 1) * $menu_list->perPage() }}
                                             </td>
 
                                             <td>
